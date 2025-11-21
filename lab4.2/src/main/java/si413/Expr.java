@@ -9,12 +9,34 @@ import java.util.ArrayList;
 public interface Expr {
     /** Evaluates this AST node and returns the result. */
     Value eval(Interpreter interp);
-	
 
     record StringLit(String value) implements Expr {
         @Override
         public Value eval(Interpreter interp) {
             return new Value.Str(value);
+        }
+    }
+
+    record Param(String name, String type) implements Expr
+    {
+        public Value eval(Interpreter interp)
+        {
+            return new Value.Str(name);
+        }
+    }
+
+    record ExprList(List<Expr> children) implements Expr
+    {
+
+        public Value eval(Interpreter interp)
+        {
+            List<Value> valList = new ArrayList<>();
+            for (Expr child : children)
+            {
+		valList.add(child.eval(interp));
+            }
+            return new Value.ValueList(valList);
+
         }
     }
 

@@ -1,4 +1,5 @@
 package si413;
+import java.util.*;
 
 /** Holds a generic Value that can be either a string or a boolean.
  * To make a string, create an instance of Value.Str("like this").
@@ -19,9 +20,9 @@ public interface Value {
         return Errors.error(String.format("Value type error: Expected Frame, got %s", toString()));
     }
 
-    default Stmt.Block parameters()
+    default List<String> parameters()
     {
-        return Errors.error(String.format("Value type error: Expected Stmt.Block, got %s", toString()));
+        return Errors.error(String.format("Value type error: Expected List<String>, got %s", toString()));
     }
 
     default Stmt.Block functionCode()
@@ -32,6 +33,10 @@ public interface Value {
     default Expr returnValue()
     {
 	return Errors.error(String.format("Value type error: Expected Expr, got %s", toString()));
+    }
+    default List<Value> getList()
+    {
+        return Errors.error(String.format("Value type error: Expected List<>, got %s", toString()));
     }
 
     record Str(String value) implements Value {
@@ -51,13 +56,14 @@ public interface Value {
             return value ? "True" : "False";
         }
     }
-    record Closure(Frame f, Stmt.Block params, Stmt.Block s, Expr returnVal) implements Value
+
+    record Closure(Frame f, List<String> params, Stmt.Block s, Expr returnVal) implements Value
     {
         @Override
         public Frame environment() {return f; }
 
         @Override
-        public Stmt.Block parameters() {return params;}
+        public List<String> parameters() {return params;}
 
         @Override
         public Stmt.Block functionCode() {return s; }
@@ -66,4 +72,8 @@ public interface Value {
 	public Expr returnValue() {return returnVal;}
     }
 
+    record ValueList(List<Value> l) implements Value
+    {
+        public List<Value> getList() {return l;} 
+    }
 }

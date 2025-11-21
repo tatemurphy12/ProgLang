@@ -1,6 +1,6 @@
 package si413;
 
-import java.util.List;
+import java.util.*;
 
 /** AST nodes for statements.
  * Statements can be executed but do not return a value.
@@ -25,15 +25,6 @@ public interface Stmt {
         }
     }
 
-	record Param(String name, String type) implements Stmt
-	{
-		public void exec(Interpreter interp)
-		{
-			interp.getEnv().addParam(name);
-          	interp.getEnv().printParams();
-		}
-	}
-	
 	record Arg(Expr arg, String type) implements Stmt
 	{
 		public void exec(Interpreter interp)
@@ -41,12 +32,12 @@ public interface Stmt {
 			//will have to change later but its fine for now because we're in the global frame
 			Frame currentEnv = interp.getEnv();
 			//we read args sequentially, so pop the corresponding parameter
-			String cParam = currentEnv.getParam();
+			
 			//we then need to reassign the value passed in the arg
 			//to the parameter its associated with, in the function Frame
 			Value argVal = arg.eval(interp);
-            System.out.println(cParam + ": " + argVal.toString());
-			currentEnv.assign(cParam, argVal);
+            //System.out.println(cParam + ": " + argVal.toString());
+			//currentEnv.assign(cParam, argVal);
 			//now when the code is run in the function call, the code referencing the 
 			//parameters should work the same as if it had referenced the args
 		}
@@ -59,23 +50,36 @@ public interface Stmt {
         }
     }
 
-	record FuncDef(String fname, Stmt.Block params, Stmt.Block code, Expr retVal) implements Stmt
+	record FuncDef(String fname, Expr.ExprList params, Stmt.Block code, Expr retVal) implements Stmt
 	{
 		public void exec(Interpreter interp)
 		{
-			params.exec(interp);
-			Value closure = new Value.Closure(interp.getEnv(), code, retVal);
+            
+            List<String> parameters = new ArrayList<>();
+            Value intermed = params.eval(interp);
+            List<Value> hooyah = intermed.getList();
+            for (Value i : hooyah)
+            {
+			    parameters.add(i.str());
+            }
+			Value closure = new Value.Closure(interp.getEnv(), parameters, code, retVal);
 			interp.getEnv().assign(fname, closure);
 			System.out.print("Defined " + fname);
 		}
 	}
 
-    record VoidFuncDef(String fname, Stmt.Block params, Stmt.Block code) implements Stmt {
+    record VoidFuncDef(String fname, Expr.ExprList params, Stmt.Block code) implements Stmt {
         @Override
         public void exec(Interpreter interp)
         {
-			params.exec(interp);
-            Value closure = new Value.Closure(interp.getEnv(), code, null);
+            List<String> parameters = new ArrayList<>();
+            Value intermed = params.eval(interp);
+            List<Value> hooyah = intermed.getList();
+            for (Value i : hooyah)
+            {
+			    parameters.add(i.str());
+            }
+            Value closure = new Value.Closure(interp.getEnv(), parameters, code, null);
             interp.getEnv().assign(fname, closure);
         }
     }
@@ -89,7 +93,6 @@ public interface Stmt {
 			//interp.addFrame(fFrame);
 	    	args.exec(interp);
 			Value fname = name.eval(interp);
-			System.out.println("Calling "+ fname);			
 			Value code = interp.getEnv().lookup(fname.str());
 			Stmt.Block b = code.functionCode();
 			b.exec(interp);

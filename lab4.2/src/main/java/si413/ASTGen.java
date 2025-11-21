@@ -157,36 +157,36 @@ public class ASTGen {
 		
 	}
 
-	private class ParamListVisitor extends Visitor<Stmt.Block>
+	private class ParamListVisitor extends Visitor<Expr.ExprList>
 	{
-		public Stmt.Block visitRegParam(ParseRules.RegParamContext ctx)
+		public Expr.ExprList visitRegParam(ParseRules.RegParamContext ctx)
 		{
-			List<Stmt> children = new ArrayList<>();
+			List<Expr> children = new ArrayList<>();
             children.add(pVis.visit(ctx.param()));
             children.addAll(visit(ctx.paramList()).children());
-            return new Stmt.Block(children);
+            return new Expr.ExprList(children);
 		}
 		
-		public Stmt.Block visitEmptyParam(ParseRules.EmptyParamContext ctx)
+		public Expr.ExprList visitEmptyParam(ParseRules.EmptyParamContext ctx)
 		{
-			return new Stmt.Block(List.of());
+			return new Expr.ExprList(List.of());
 		}
 
 	}
 
-	private class ParamVisitor extends Visitor<Stmt>
+	private class ParamVisitor extends Visitor<Expr>
 	{
-		public Stmt visitBoolParam(ParseRules.BoolParamContext ctx)
+		public Expr visitBoolParam(ParseRules.BoolParamContext ctx)
 		{
-			return new Stmt.Param(ctx.ID().getText(), ctx.TYPEBOOL().getText());
+			return new Expr.Param(ctx.ID().getText(), ctx.TYPEBOOL().getText());
 		}
-		public Stmt visitStrParam(ParseRules.StrParamContext ctx)
+		public Expr visitStrParam(ParseRules.StrParamContext ctx)
 		{
-			return new Stmt.Param(ctx.ID().getText(), ctx.TYPESTR().getText());
+			return new Expr.Param(ctx.ID().getText(), ctx.TYPESTR().getText());
 		}
-		public Stmt visitFunParam(ParseRules.FunParamContext ctx)
+		public Expr visitFunParam(ParseRules.FunParamContext ctx)
 		{
-			return new Stmt.Param(ctx.ID().getText(), ctx.TYPEFUNC().getText());
+			return new Expr.Param(ctx.ID().getText(), ctx.TYPEFUNC().getText());
 		}
 		
 	}
