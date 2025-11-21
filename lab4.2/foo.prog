@@ -1,0 +1,16 @@
+define function table_tracker(string name)
+(
+        print (string name)
+        assign (bool first T)
+        assign (string total [])
+        define string order(string food)
+        (
+              assign (string retvalue concat(food total) )
+              if (first ( print(string retvalue) ) () )
+              send retvalue
+        )
+        send order
+)
+
+assign (function table1 table_tracker(string [CS profs]))
+table1(string [Kimchi])

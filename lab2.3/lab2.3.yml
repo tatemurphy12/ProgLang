@@ -1,0 +1,21 @@
+# SI413 Lab 2.3: Compiler for StringBoolVar language
+
+your_name: Tate Murphy
+
+your_alpha: 264542
+
+used_ai: Y # remember to turn in an aichat.md file as well
+
+language_name: Arrr!
+
+# leave this as NONE for your initial submission
+changes_on_resubmit: |
+    I created the visit node functionality to produce llvm ir code.
+
+# describe any collaboration or help you got from classmates
+collaboration: |
+    NONE
+
+# something else your instructor should know?
+any_other_comments_for_me: |
+    Used Gemini to debug mainly. Had a really hard time figuring out pointer types and getting them to agree.
