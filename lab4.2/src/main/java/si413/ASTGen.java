@@ -123,36 +123,37 @@ public class ASTGen {
 
     }
 	
-	private class ArgListVisitor extends Visitor<Stmt.Block>
+	private class ArgListVisitor extends Visitor<Expr.ExprList>
 	{
-		public Stmt.Block visitRegArg(ParseRules.RegArgContext ctx)
+		public Expr.ExprList visitRegArg(ParseRules.RegArgContext ctx)
 		{
-			List<Stmt> children = new ArrayList<>();
+			List<Expr> children = new ArrayList<>();
             children.add(aVis.visit(ctx.arg()));
             children.addAll(visit(ctx.argList()).children());
-            return new Stmt.Block(children);
+            return new Expr.ExprList(children);
+
 		}
 		
-		public Stmt.Block visitEmptyArg(ParseRules.EmptyArgContext ctx)
+		public Expr.ExprList visitEmptyArg(ParseRules.EmptyArgContext ctx)
 		{
-			return new Stmt.Block(List.of());
+			return new Expr.ExprList(List.of());
 		}
 
 	}
 
-	private class ArgVisitor extends Visitor<Stmt>
+	private class ArgVisitor extends Visitor<Expr>
 	{
-		public Stmt visitBoolArg(ParseRules.BoolArgContext ctx)
+		public Expr visitBoolArg(ParseRules.BoolArgContext ctx)
 		{
-			return new Stmt.Arg(eVis.visit(ctx.boolEx()), ctx.TYPEBOOL().getText());
+			return new Expr.Arg(eVis.visit(ctx.boolEx()), ctx.TYPEBOOL().getText());
 		}
-		public Stmt visitStrArg(ParseRules.StrArgContext ctx)
+		public Expr visitStrArg(ParseRules.StrArgContext ctx)
 		{
-			return new Stmt.Arg(eVis.visit(ctx.strEx()), ctx.TYPESTR().getText());
+			return new Expr.Arg(eVis.visit(ctx.strEx()), ctx.TYPESTR().getText());
 		}
-		public Stmt visitFunArg(ParseRules.FunArgContext ctx)
+		public Expr visitFunArg(ParseRules.FunArgContext ctx)
 		{
-			return new Stmt.Arg(eVis.visit(ctx.funcEx()), ctx.TYPEFUNC().getText());
+			return new Expr.Arg(eVis.visit(ctx.funcEx()), ctx.TYPEFUNC().getText());
 		}
 		
 	}

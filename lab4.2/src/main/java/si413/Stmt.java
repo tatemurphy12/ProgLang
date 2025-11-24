@@ -25,23 +25,6 @@ public interface Stmt {
         }
     }
 
-	record Arg(Expr arg, String type) implements Stmt
-	{
-		public void exec(Interpreter interp)
-		{
-			//will have to change later but its fine for now because we're in the global frame
-			Frame currentEnv = interp.getEnv();
-			//we read args sequentially, so pop the corresponding parameter
-			
-			//we then need to reassign the value passed in the arg
-			//to the parameter its associated with, in the function Frame
-			Value argVal = arg.eval(interp);
-            //System.out.println(cParam + ": " + argVal.toString());
-			//currentEnv.assign(cParam, argVal);
-			//now when the code is run in the function call, the code referencing the 
-			//parameters should work the same as if it had referenced the args
-		}
-	}
 
     record ExprStmt(Expr child) implements Stmt {
         @Override
@@ -84,18 +67,23 @@ public interface Stmt {
         }
     }
 
-    record VoidFunCall(Expr name, Stmt.Block args) implements Stmt
+    record VoidFunCall(Expr name, Expr.ExprList args) implements Stmt
     {
       @Override
       public void exec(Interpreter interp)
       {
-			//Frame fFrame = new Frame();
-			//interp.addFrame(fFrame);
-	    	args.exec(interp);
 			Value fname = name.eval(interp);
-			Value code = interp.getEnv().lookup(fname.str());
-			Stmt.Block b = code.functionCode();
-			b.exec(interp);
+			Frame fFrame = interp.getEnv();
+			//interp.addFrame(fFrame);
+			Value vList = args.eval(interp);
+			List<Value> argList = vList.getList();
+			for (Value a : argList)
+			{
+				fFrame.assign(fname.str(), a);
+			}
+			Value closure = fFrame.lookup(fname.str());
+			Stmt.Block code = closure.functionCode();
+			code.exec(interp);
 			//interp.removeFrame();
       }
     }

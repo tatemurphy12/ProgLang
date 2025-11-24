@@ -25,6 +25,17 @@ public interface Expr {
         }
     }
 
+    record Arg(Expr arg, String type) implements Expr
+	{
+		//change so that it works basically
+		//also change all function calls
+		public Value eval(Interpreter interp)
+		{
+			return arg.eval(interp);
+		}
+	}
+
+
     record ExprList(List<Expr> children) implements Expr
     {
 
@@ -33,7 +44,7 @@ public interface Expr {
             List<Value> valList = new ArrayList<>();
             for (Expr child : children)
             {
-		valList.add(child.eval(interp));
+				valList.add(child.eval(interp));
             }
             return new Value.ValueList(valList);
 
@@ -139,39 +150,48 @@ public interface Expr {
         }
     }
 
-	record FunCall(Expr name, Stmt.Block args) implements Expr
+	record FunCall(Expr name, Expr.ExprList args) implements Expr
     {
       @Override
       public Value eval(Interpreter interp)
       {
-			//Frame f = new Frame();
-			//interp.addFrame(f);
-	    	args.exec(interp);
 			Value fname = name.eval(interp);
-			Value close = interp.getEnv().lookup(fname.str());
-			Stmt.Block code = close.functionCode();
+			Frame fFrame = interp.getEnv();
+			//interp.addFrame(fFrame);
+			Value vList = args.eval(interp);
+			List<Value> argList = vList.getList();
+			for (Value a : argList)
+			{
+				fFrame.assign(fname.str(), a);
+			}
+			Value closure = fFrame.lookup(fname.str());
+			Stmt.Block code = closure.functionCode();
 			code.exec(interp);
-			Expr retVal = close.returnValue();
+			Expr retVal = closure.returnValue();
 			Value v = retVal.eval(interp);
 			//interp.removeFrame();
 			return v;
       }
     }
 
-	record FunFunCall(Expr name, Stmt.Block args) implements Expr
+	record FunFunCall(Expr name, Expr.ExprList args) implements Expr
     {
       @Override
       public Value eval(Interpreter interp)
       {
-			//Frame f = new Frame();
-			//interp.addFrame(f);
-	    	args.exec(interp);
 			Value fname = name.eval(interp);
-			Value close = interp.getEnv().lookup(fname.str());
-			System.out.println("Executing function code");
-			Stmt.Block code = close.functionCode();
+			Frame fFrame = interp.getEnv();
+			//interp.addFrame(fFrame);
+			Value vList = args.eval(interp);
+			List<Value> argList = vList.getList();
+			for (Value a : argList)
+			{
+				fFrame.assign(fname.str(), a);
+			}
+			Value closure = fFrame.lookup(fname.str());
+			Stmt.Block code = closure.functionCode();
 			code.exec(interp);
-			Expr retVal = close.returnValue(); 
+			Expr retVal = closure.returnValue(); 
 			Value innerName = retVal.eval(interp);
 			Value innerClosure = interp.getEnv().lookup(innerName.str());
 			//interp.removeFrame();
