@@ -14,14 +14,14 @@ public interface Stmt {
     record Block(List<Stmt> children) implements Stmt {
         @Override
         public void exec(Interpreter interp) {
-			System.out.println("Executing stmtList");
+			//System.out.println("Executing stmtList");
             for (Stmt child : children) {
 				//System.out.println(child.toString());
                 child.exec(interp);
             }
-            System.out.println();
+            //System.out.println();
 			//interp.getEnv().printBinds();
-            System.out.println();
+            //System.out.println();
         }
     }
 
@@ -47,7 +47,7 @@ public interface Stmt {
             }
 			Value closure = new Value.Closure(interp.getEnv(), parameters, code, retVal);
 			interp.getEnv().assign(fname, closure);
-			System.out.print("Defined " + fname);
+			//System.out.print("Defined " + fname);
 		}
 	}
 
@@ -76,10 +76,11 @@ public interface Stmt {
 			Frame fFrame = interp.getEnv();
 			//interp.addFrame(fFrame);
 			Value vList = args.eval(interp);
-			List<Value> argList = vList.getList();
-			for (Value a : argList)
+            List<Value> argList = vList.getList();
+            List<String> parameters = fFrame.lookup(fname.str()).parameters();
+			for (int i = 0; i < argList.size(); i++)
 			{
-				fFrame.assign(fname.str(), a);
+				fFrame.assign(parameters.get(i), argList.get(i));
 			}
 			Value closure = fFrame.lookup(fname.str());
 			Stmt.Block code = closure.functionCode();

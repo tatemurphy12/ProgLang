@@ -160,9 +160,10 @@ public interface Expr {
 			//interp.addFrame(fFrame);
 			Value vList = args.eval(interp);
 			List<Value> argList = vList.getList();
-			for (Value a : argList)
+            List<String> parameters = fFrame.lookup(fname.str()).parameters();
+			for (int i = 0; i < argList.size(); i++)
 			{
-				fFrame.assign(fname.str(), a);
+				fFrame.assign(parameters.get(i), argList.get(i));
 			}
 			Value closure = fFrame.lookup(fname.str());
 			Stmt.Block code = closure.functionCode();
@@ -184,9 +185,10 @@ public interface Expr {
 			//interp.addFrame(fFrame);
 			Value vList = args.eval(interp);
 			List<Value> argList = vList.getList();
-			for (Value a : argList)
+            List<String> parameters = fFrame.lookup(fname.str()).parameters();
+			for (int i = 0; i < argList.size(); i++)
 			{
-				fFrame.assign(fname.str(), a);
+				fFrame.assign(parameters.get(i), argList.get(i));
 			}
 			Value closure = fFrame.lookup(fname.str());
 			Stmt.Block code = closure.functionCode();
