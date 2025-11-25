@@ -156,8 +156,11 @@ public interface Expr {
       public Value eval(Interpreter interp)
       {
 			Value fname = name.eval(interp);
-			Frame fFrame = interp.getEnv();
-			//interp.addFrame(fFrame);
+			Frame fFrame = new Frame();
+			Frame parentEnv = interp.getEnv().lookup(fname.str()).getDefinedEnv();
+			fFrame.setParent(parentEnv);
+			fFrame.addParentBindings();
+			interp.addFrame(fFrame);
 			Value vList = args.eval(interp);
 			List<Value> argList = vList.getList();
             List<String> parameters = fFrame.lookup(fname.str()).parameters();
@@ -170,7 +173,7 @@ public interface Expr {
 			code.exec(interp);
 			Expr retVal = closure.returnValue();
 			Value v = retVal.eval(interp);
-			//interp.removeFrame();
+			interp.removeFrame();
 			return v;
       }
     }
@@ -181,8 +184,11 @@ public interface Expr {
       public Value eval(Interpreter interp)
       {
 			Value fname = name.eval(interp);
-			Frame fFrame = interp.getEnv();
-			//interp.addFrame(fFrame);
+			Frame fFrame = new Frame();
+			Frame parentEnv = interp.getEnv().lookup(fname.str()).getDefinedEnv();
+			fFrame.setParent(parentEnv);
+			fFrame.addParentBindings();
+			interp.addFrame(fFrame);
 			Value vList = args.eval(interp);
 			List<Value> argList = vList.getList();
             List<String> parameters = fFrame.lookup(fname.str()).parameters();
@@ -196,7 +202,7 @@ public interface Expr {
 			Expr retVal = closure.returnValue(); 
 			Value innerName = retVal.eval(interp);
 			Value innerClosure = interp.getEnv().lookup(innerName.str());
-			//interp.removeFrame();
+			interp.removeFrame();
 			return innerClosure;
       }
     }

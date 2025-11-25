@@ -12,7 +12,7 @@ import java.util.*;
  * YOU WILL HAVE TO MODIFY THIS to get things to work!
  */
 public class Frame {
-
+	
 	private Frame parentFrame;
     private Map<String, Value> bindings = new HashMap<>();
 	private List<String> params = new ArrayList<>();
@@ -22,33 +22,23 @@ public class Frame {
         else return Errors.error(String.format("No binding found for %s in current environemnt", name));
     }
 
-
-	public void printBinds()
-	{
-		for (Map.Entry<String, Value> entry : bindings.entrySet())
-		{
-				System.out.println(entry.getKey());
-				System.out.println(entry.getValue());
-		}
-	}
-
     public void assign(String name, Value val) {
         bindings.put(name, val);
     }
+	public void addParentBindings()
+	{
+		if (parentFrame == null)
+		{
+			Errors.error(String.format("Error: I am the parent frame."));
+		}
+		else
+		{
+			Map<String, Value> parentBinds = parentFrame.getBinds();
+			bindings.putAll(parentBinds);
+		}
+	}
+	private Map<String, Value> getBinds() { return bindings; }
+	public void setParent(Frame parent) { parentFrame = parent; }
+	public Frame getParent() { return parentFrame; }
 
-	public void addParam(String p)
-	{
-		params.add(p);
-	}
-	public String getParam()
-	{
-		String current = params.remove(0);
-		params.add(current);
-		return current;
-	}
-    public void printParams()
-    {
-      for (String param : params)
-        System.out.println(param);
-    }
 }

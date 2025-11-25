@@ -38,6 +38,10 @@ public interface Value {
     {
         return Errors.error(String.format("Value type error: Expected List<>, got %s", toString()));
     }
+    default Frame getDefinedEnv()
+    {
+        return Errors.error(String.format("Value type error: Expected Frame, got %s", toString()));
+    }
 
     record Str(String value) implements Value {
         @Override
@@ -57,7 +61,7 @@ public interface Value {
         }
     }
 
-    record Closure(Frame f, List<String> params, Stmt.Block s, Expr returnVal) implements Value
+    record Closure(Frame f, List<String> params, Stmt.Block s, Expr returnVal, Frame defEnv) implements Value
     {
         @Override
         public Frame environment() {return f; }
@@ -70,6 +74,10 @@ public interface Value {
 
 	@Override 
 	public Expr returnValue() {return returnVal;}
+
+	@Override 
+	public Frame getDefinedEnv() {return defEnv;}
+
     }
 
     record ValueList(List<Value> l) implements Value

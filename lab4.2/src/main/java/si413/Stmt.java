@@ -37,7 +37,6 @@ public interface Stmt {
 	{
 		public void exec(Interpreter interp)
 		{
-            
             List<String> parameters = new ArrayList<>();
             Value intermed = params.eval(interp);
             List<Value> hooyah = intermed.getList();
@@ -45,7 +44,7 @@ public interface Stmt {
             {
 			    parameters.add(i.str());
             }
-			Value closure = new Value.Closure(interp.getEnv(), parameters, code, retVal);
+			Value closure = new Value.Closure(interp.getEnv(), parameters, code, retVal, interp.getEnv());
 			interp.getEnv().assign(fname, closure);
 			//System.out.print("Defined " + fname);
 		}
@@ -62,7 +61,7 @@ public interface Stmt {
             {
 			    parameters.add(i.str());
             }
-            Value closure = new Value.Closure(interp.getEnv(), parameters, code, null);
+            Value closure = new Value.Closure(interp.getEnv(), parameters, code, null, interp.getEnv());
             interp.getEnv().assign(fname, closure);
         }
     }
@@ -71,10 +70,13 @@ public interface Stmt {
     {
       @Override
       public void exec(Interpreter interp)
-      {
+      {			
 			Value fname = name.eval(interp);
-			Frame fFrame = interp.getEnv();
-			//interp.addFrame(fFrame);
+			Frame fFrame = new Frame();
+			Frame parentEnv = interp.getEnv().lookup(fname.str()).getDefinedEnv();
+			fFrame.setParent(parentEnv);
+			fFrame.addParentBindings();
+			interp.addFrame(fFrame);
 			Value vList = args.eval(interp);
             List<Value> argList = vList.getList();
             List<String> parameters = fFrame.lookup(fname.str()).parameters();
@@ -85,7 +87,7 @@ public interface Stmt {
 			Value closure = fFrame.lookup(fname.str());
 			Stmt.Block code = closure.functionCode();
 			code.exec(interp);
-			//interp.removeFrame();
+			interp.removeFrame();
       }
     }
 
