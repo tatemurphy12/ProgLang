@@ -27,6 +27,7 @@ public class Interpreter {
 
     public Interpreter() {
         globalFrame = new Frame();
+		globalFrame.setParent(null);
 		frameStack.push(globalFrame);
     }
 

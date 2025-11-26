@@ -156,19 +156,24 @@ public interface Expr {
       public Value eval(Interpreter interp)
       {
 			Value fname = name.eval(interp);
+			Value closure;
+			if (fname instanceof Value.Str)
+				closure = interp.getEnv().lookup(fname.str());
+			else
+				closure = fname;
 			Frame fFrame = new Frame();
-			Frame parentEnv = interp.getEnv().lookup(fname.str()).getDefinedEnv();
+			Frame parentEnv = closure.getDefinedEnv();
 			fFrame.setParent(parentEnv);
-			fFrame.addParentBindings();
-			interp.addFrame(fFrame);
 			Value vList = args.eval(interp);
+            List<String> parameters = closure.parameters();
+			interp.addFrame(fFrame);
 			List<Value> argList = vList.getList();
-            List<String> parameters = fFrame.lookup(fname.str()).parameters();
 			for (int i = 0; i < argList.size(); i++)
 			{
 				fFrame.assign(parameters.get(i), argList.get(i));
+				//System.out.println("Arg");
+				//System.out.println(argList.get(i));
 			}
-			Value closure = fFrame.lookup(fname.str());
 			Stmt.Block code = closure.functionCode();
 			code.exec(interp);
 			Expr retVal = closure.returnValue();
@@ -184,26 +189,36 @@ public interface Expr {
       public Value eval(Interpreter interp)
       {
 			Value fname = name.eval(interp);
+			Value closure;
+			if (fname instanceof Value.Str)
+				closure = interp.getEnv().lookup(fname.str());
+			else
+				closure = fname;
 			Frame fFrame = new Frame();
-			Frame parentEnv = interp.getEnv().lookup(fname.str()).getDefinedEnv();
+			Frame parentEnv = closure.getDefinedEnv();
 			fFrame.setParent(parentEnv);
-			fFrame.addParentBindings();
-			interp.addFrame(fFrame);
 			Value vList = args.eval(interp);
+            List<String> parameters = closure.parameters();
 			List<Value> argList = vList.getList();
-            List<String> parameters = fFrame.lookup(fname.str()).parameters();
+			interp.addFrame(fFrame);
 			for (int i = 0; i < argList.size(); i++)
 			{
 				fFrame.assign(parameters.get(i), argList.get(i));
+				//System.out.println("Arg");
+				//System.out.println(argList.get(i));
 			}
-			Value closure = fFrame.lookup(fname.str());
 			Stmt.Block code = closure.functionCode();
 			code.exec(interp);
 			Expr retVal = closure.returnValue(); 
-			Value innerName = retVal.eval(interp);
-			Value innerClosure = interp.getEnv().lookup(innerName.str());
+			Value v = retVal.eval(interp);
+			if (retVal instanceof Expr.FuncVar)
+			{
+				Value innerClosure = interp.getEnv().lookup(v.str());
+				interp.removeFrame();
+				return innerClosure;
+			}
 			interp.removeFrame();
-			return innerClosure;
+			return v;
       }
     }
 

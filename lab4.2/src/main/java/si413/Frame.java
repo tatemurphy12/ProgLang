@@ -17,25 +17,35 @@ public class Frame {
     private Map<String, Value> bindings = new HashMap<>();
 	private List<String> params = new ArrayList<>();
 
-    public Value lookup(String name) {
-        if (bindings.containsKey(name)) return bindings.get(name);
-        else return Errors.error(String.format("No binding found for %s in current environemnt", name));
-    }
-
-    public void assign(String name, Value val) {
-        bindings.put(name, val);
-    }
-	public void addParentBindings()
+    public Value lookup(String name) 
 	{
+		if (bindings.containsKey(name))
+			return bindings.get(name);
 		if (parentFrame == null)
 		{
-			Errors.error(String.format("Error: I am the parent frame."));
+			Errors.error(String.format("%s is not a binding", name));
+			return null;
 		}
 		else
-		{
-			Map<String, Value> parentBinds = parentFrame.getBinds();
-			bindings.putAll(parentBinds);
-		}
+			return parentFrame.lookup(name);
+	}
+
+    public void assign(String name, Value val) {
+		Frame definedFrame = assignHelper(name);
+		if (definedFrame == null)
+			bindings.put(name, val);
+		else
+			definedFrame.bindings.put(name, val);
+    }
+
+	private Frame assignHelper(String name)
+	{
+		if (bindings.containsKey(name))
+			return this;
+		else if (parentFrame != null)
+				return parentFrame.assignHelper(name);
+		else
+			return null;	
 	}
 	private Map<String, Value> getBinds() { return bindings; }
 	public void setParent(Frame parent) { parentFrame = parent; }
