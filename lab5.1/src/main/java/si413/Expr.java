@@ -73,6 +73,66 @@ public interface Expr {
         }
     }
 
+    record NumLess(Expr lhs, Expr rhs) implements Expr {
+        @Override
+        public Value eval(Interpreter interp) {
+            int lval = lhs.eval(interp).num();
+            int rval = rhs.eval(interp).num();
+            return new Value.Bool(lval < rval);
+        }
+    }
+
+    record Add(Expr lhs, Expr rhs) implements Expr {
+        @Override
+        public Value eval(Interpreter interp) {
+            int lval = lhs.eval(interp).num();
+            int rval = rhs.eval(interp).num();
+            return new Value.Number(lval + rval);
+        }
+    }
+
+    record Subtract(Expr lhs, Expr rhs) implements Expr {
+        @Override
+        public Value eval(Interpreter interp) {
+            int lval = lhs.eval(interp).num();
+            int rval = rhs.eval(interp).num();
+            return new Value.Number(lval - rval);
+        }
+    }
+
+    record Multiply(Expr lhs, Expr rhs) implements Expr {
+        @Override
+        public Value eval(Interpreter interp) {
+            int lval = lhs.eval(interp).num();
+            int rval = rhs.eval(interp).num();
+            return new Value.Number(lval * rval);
+        }
+    }
+
+    record NumLit(String num) implements Expr {
+        @Override
+        public Value eval(Interpreter interp)
+        {
+            return new Value.Number(Integer.parseInt(num));
+        }
+    }
+
+    record NumInput() implements Expr {
+        @Override
+        public Value eval(Interpreter interp)
+        {
+            return new Value.Number(Integer.parseInt(interp.readInputLine()));
+        }
+    }
+
+    record ToString(Expr num) implements Expr {
+        @Override
+        public Value eval(Interpreter interp)
+        {
+            return new Value.Str(num.eval(interp).toString());
+        }
+    }
+
     record Contains(Expr lhs, Expr rhs) implements Expr {
         @Override
         public Value eval(Interpreter interp) {

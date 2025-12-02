@@ -1,7 +1,9 @@
 // Simple Grammer
 parser grammar ParseRules;
 
-tokens { ASSIGN, PRINT, TYPESTR, TYPEBOOL, TYPEVOID, TYPEFUNC, DEF, RETURN, WHILE, IF, CONCAT, REV, IN, CON, LT, AND, OR, NOT, OPENEX, CLOSEX, BOOL, STR, ID }
+tokens { ASSIGN, PRINT, TYPESTR, TYPEBOOL, TYPEVOID, TYPEFUNC, DEF, RETURN,
+WHILE, IF, CONCAT, REV, IN, CON, LT, AND, OR, NOT, OPENEX, CLOSEX, BOOL, STR,
+ID, TYPENUM, NUM, NUMLT, NUMIN, ADD, SUB, MUL, TOSTR }
 
 prog
   : stmtList EOF #RegProg
@@ -16,8 +18,10 @@ stmt
   : ASSIGN OPENEX TYPESTR ID strEx CLOSEX #AssignStr
   | ASSIGN OPENEX TYPEBOOL ID boolEx CLOSEX #AssignBool
   | ASSIGN OPENEX TYPEFUNC ID funcEx CLOSEX #AssignFun
+  | ASSIGN OPENEX TYPENUM ID numEx CLOSEX #AssignNum
   | PRINT OPENEX TYPESTR strEx CLOSEX #PrintStr
   | PRINT OPENEX TYPEBOOL boolEx CLOSEX #PrintBool
+  | PRINT OPENEX TYPENUM numEx CLOSEX #PrintNum
   | IF OPENEX boolEx OPENEX stmtList CLOSEX OPENEX stmtList CLOSEX CLOSEX #IfElse
   | WHILE OPENEX boolEx stmtList CLOSEX #WhileLoop
   | DEF TYPESTR ID OPENEX paramList CLOSEX OPENEX stmtList RETURN strEx CLOSEX #DefStrFun
@@ -51,6 +55,7 @@ arg
 
 strEx
   : OPENEX strEx CLOSEX #StrIdentity
+  | TOSTR OPENEX numEx CLOSEX #NumToStr
   | IN OPENEX CLOSEX #Input
   | REV OPENEX strEx CLOSEX #Reverse
   | CONCAT OPENEX strEx strEx CLOSEX #Concat
@@ -65,10 +70,21 @@ boolEx
   | NOT OPENEX boolEx CLOSEX #Not
   | CON OPENEX strEx strEx CLOSEX #Contains
   | LT OPENEX strEx strEx CLOSEX #LessThan
+  | NUMLT OPENEX numEx numEx CLOSEX #NumLessThan
   | ID #BoolVar
   | BOOL #BoolLit
   | OPENEX boolEx CLOSEX #BoolIdentity
   | funcEx OPENEX argList CLOSEX #BoolFunCall
+  ;
+
+numEx
+  : NUMIN OPENEX CLOSEX #NumInput
+  | ADD OPENEX numEx numEx CLOSEX #Add
+  | SUB OPENEX numEx numEx CLOSEX #Subtract
+  | MUL OPENEX numEx numEx CLOSEX #Multiply
+  | ID #NumVar
+  | NUM #NumLit
+  | OPENEX numEx CLOSEX #NumIdentity
   ;
 
 funcEx

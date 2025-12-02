@@ -66,6 +66,11 @@ public class ASTGen {
         }
 
         @Override
+        public Stmt visitAssignNum(ParseRules.AssignNumContext ctx) {
+            return new Stmt.Assign(ctx.ID().getText(), eVis.visit(ctx.numEx()));
+        }
+
+        @Override
         public Stmt visitPrintStr(ParseRules.PrintStrContext ctx) {
             return new Stmt.Print(eVis.visit(ctx.strEx()));
         }
@@ -73,6 +78,11 @@ public class ASTGen {
         @Override
         public Stmt visitPrintBool(ParseRules.PrintBoolContext ctx) {
             return new Stmt.Print(eVis.visit(ctx.boolEx()));
+        }
+
+        @Override
+        public Stmt visitPrintNum(ParseRules.PrintNumContext ctx) {
+            return new Stmt.Print(eVis.visit(ctx.numEx()));
         }
 
         @Override
@@ -178,6 +188,61 @@ public class ASTGen {
         public Expr visitBoolIdentity(ParseRules.BoolIdentityContext ctx) {
             return visit(ctx.boolEx());
         }
+
+        @Override
+        public Expr visitNumLessThan(ParseRules.NumLessThanContext ctx) {
+            return new Expr.NumLess(
+                visit(ctx.numEx(0)),
+                visit(ctx.numEx(1)));
+        }
+
+        @Override
+        public Expr visitNumVar(ParseRules.NumVarContext ctx) {
+            return new Expr.Var(ctx.ID().getText());
+        }
+
+        @Override
+        public Expr visitNumLit(ParseRules.NumLitContext ctx) {
+            return new Expr.NumLit(ctx.NUM().getText());
+        }
+
+        @Override
+        public Expr visitNumIdentity(ParseRules.NumIdentityContext ctx) {
+            return visit(ctx.numEx());
+        }
+
+        @Override
+        public Expr visitAdd(ParseRules.AddContext ctx) {
+            return new Expr.Add(
+                visit(ctx.numEx(0)),
+                visit(ctx.numEx(1)));
+        }
+
+        @Override
+        public Expr visitSubtract(ParseRules.SubtractContext ctx) {
+            return new Expr.Subtract(
+                visit(ctx.numEx(0)),
+                visit(ctx.numEx(1)));
+        }
+
+        @Override
+        public Expr visitMultiply(ParseRules.MultiplyContext ctx) {
+            return new Expr.Multiply(
+                visit(ctx.numEx(0)),
+                visit(ctx.numEx(1)));
+        }
+
+        @Override
+        public Expr visitNumInput(ParseRules.NumInputContext ctx) {
+            return new Expr.NumInput();
+        }
+
+        @Override
+        public Expr visitNumToStr(ParseRules.NumToStrContext ctx) {
+            return new Expr.ToString(visit(ctx.numEx()));
+        }
+
+
     }
 
     private StmtListVisitor stlVis = new StmtListVisitor();

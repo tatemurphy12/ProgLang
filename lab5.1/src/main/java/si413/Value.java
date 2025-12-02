@@ -13,6 +13,9 @@ public interface Value {
     default boolean bool() {
         return Errors.error(String.format("Value type error: Expected boolean, got %s", toString()));
     }
+    default int num() {
+        return Errors.error(String.format("Value type error: Expected number, got %s", toString()));
+    }
 
     record Str(String value) implements Value {
         @Override
@@ -29,6 +32,16 @@ public interface Value {
         @Override
         public String toString() {
             return value ? "True" : "False";
+        }
+    }
+
+    record Number(int value) implements Value {
+        @Override
+        public int num() { return value; }
+
+        @Override
+        public String toString() {
+            return String.valueOf(value);
         }
     }
 }

@@ -1,8 +1,8 @@
 # SI413 Lab 5.1: Numbers and built-in functions
 
-your_name: BLAH BLAH
+your_name: Tate Murphy
 
-your_alpha: BLAH
+your_alpha: 264542
 
 used_ai: Y # remember to turn in an aichat.md file as well
 
@@ -13,8 +13,28 @@ option: b
 
 # fill in with your equivalent to the sqrt python program
 sqrt_program: |
-    BLAH BLAH BLAH BLAH
-    BLAH BLAH BLAH BLAH
+    print (string [Enter a number] )
+    assign (number target num_input())
+
+    if ( <<(target 1) 
+    ( print(string [Too small])
+      assign (number target 1234) )
+    ()
+    )
+
+    assign (number cur 1)
+    loop ( <<( times(cur cur) target ) 
+          assign (number cur plus(cur 1))
+        )
+
+    assign (number prev minus(cur 1))
+    if ( <<( minus(target times(prev prev) ) minus( times(cur cur) target) )
+          ( assign (number sqrt prev))
+          ( assign (number sqrt cur))
+      )
+
+    print (string concat( [Square root of ] concat( to_string(target) concat( [ is close to ] to_string(sqrt) ) ) ) ) 
+      
 
 # leave this as NONE for your initial submission
 changes_on_resubmit: |

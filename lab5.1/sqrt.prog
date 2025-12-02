@@ -1,0 +1,21 @@
+print (string [Enter a number] )
+assign (number target num_input())
+
+if ( <<(target 1) 
+( print(string [Too small])
+  assign (number target 1234) )
+()
+)
+
+assign (number cur 1)
+loop ( <<( times(cur cur) target ) 
+       assign (number cur plus(cur 1))
+     )
+
+assign (number prev minus(cur 1))
+if ( <<( minus(target times(prev prev) ) minus( times(cur cur) target) )
+       ( assign (number sqrt prev))
+       ( assign (number sqrt cur))
+   )
+
+print (string concat( [Square root of ] concat( to_string(target) concat( [ is close to ] to_string(sqrt) ) ) ) ) 
